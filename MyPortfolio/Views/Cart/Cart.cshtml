@@ -1,0 +1,73 @@
+@model Cart
+@{
+    ViewData["Title"] = "Shopping cart";
+    var subtotal = Model.CartItems.Sum(x => x.Product.Price * x.Quantity);
+}
+
+<section class="section section-tight">
+    <div class="container">
+        <h1 class="mb-4">Shopping cart</h1>
+
+        @if (TempData["CartError"] is string cartError)
+        {
+            <div class="alert-c is-error" role="alert"><i class="fas fa-circle-exclamation mt-1"></i><span>@cartError</span></div>
+        }
+
+        @if (!Model.CartItems.Any())
+        {
+            <div class="panel empty-state">
+                <i class="fas fa-cart-shopping"></i>
+                <h3>Your cart is empty</h3>
+                <p>Browse our collection and add a watch you love.</p>
+                <a class="btn-brand" asp-controller="Home" asp-action="Product">Continue shopping</a>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="panel">
+                        @foreach (var item in Model.CartItems)
+                        {
+                            <div class="cart-line">
+                                <a class="l-img" asp-controller="Home" asp-action="Productdetail" asp-route-id="@item.ProductId">
+                                    <partial name="_ProductImage" model="item.Product" />
+                                </a>
+                                <div class="l-info">
+                                    <div class="watch-brand">@item.Product.Brand?.Name</div>
+                                    <h3><a asp-controller="Home" asp-action="Productdetail" asp-route-id="@item.ProductId" class="text-reset">@item.Product.Name</a></h3>
+                                    <div class="text-muted-c" style="font-size:.85rem">@item.Product.Category?.Name · $@item.Product.Price.ToString("N0") each</div>
+                                </div>
+                                <div class="l-qty">
+                                    <div class="qty">
+                                        <form asp-action="DecreaseQ" method="post"><input type="hidden" name="id" value="@item.Id" /><button type="submit" aria-label="Decrease quantity">−</button></form>
+                                        <span class="qty-num" aria-live="polite">@item.Quantity</span>
+                                        <form asp-action="IncreaseQ" method="post"><input type="hidden" name="id" value="@item.Id" /><button type="submit" aria-label="Increase quantity">+</button></form>
+                                    </div>
+                                </div>
+                                <div class="l-total">
+                                    <div class="price">$@((item.Product.Price * item.Quantity).ToString("N0"))</div>
+                                    <form asp-action="RemoveCart" method="post">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="link-danger-c">Remove</button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="summary-card">
+                        <h2 class="h4 mb-3">Order summary</h2>
+                        <div class="summary-row"><span class="text-muted-c">Subtotal</span><strong>$@subtotal.ToString("N0")</strong></div>
+                        <div class="summary-row"><span class="text-muted-c">Shipping</span><span class="text-free">Free</span></div>
+                        <div class="summary-row total"><span>Total</span><span class="price">$@subtotal.ToString("N0")</span></div>
+                        <a class="btn-brand btn-block py-3 mt-2" asp-controller="Order" asp-action="Checkout">Proceed to checkout</a>
+                        <a class="btn-quiet btn-block mt-2" asp-controller="Home" asp-action="Product">Continue shopping</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

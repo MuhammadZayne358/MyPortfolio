@@ -1,0 +1,55 @@
+﻿@model IEnumerable<Order>
+@{
+    ViewData["Title"] = "Orders";
+    Layout = "_AdminLayout";
+    Func<string, string> badge = status => status switch
+    {
+        "Delivered" => "is-ok",
+        "Cancelled" => "is-bad",
+        "Shipped" or "Processing" => "is-info",
+        _ => string.Empty
+    };
+}
+
+<div class="admin-head">
+    <div>
+        <h1 class="admin-title">Orders</h1>
+        <p class="admin-sub">@Model.Count() order@(Model.Count() == 1 ? "" : "s") from all customers</p>
+    </div>
+</div>
+
+<div class="admin-panel">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <i class="fas fa-receipt"></i>
+            <h3>No orders yet</h3>
+            <p>Orders placed by customers will appear here.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="data-table is-stacked">
+                <thead>
+                    <tr><th>Order</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var o in Model)
+                    {
+                        <tr>
+                            <td data-label="Order"><strong>#@o.Id</strong></td>
+                            <td data-label="Customer">@o.FullName<div class="text-muted-c" style="font-size:.8rem">@o.City</div></td>
+                            <td data-label="Date">@o.OrderDate.ToString("dd MMM yyyy")</td>
+                            <td data-label="Items">@o.OrderItems.Sum(i => i.Quantity)</td>
+                            <td data-label="Total"><strong>$@o.TotalAmount.ToString("N0")</strong></td>
+                            <td data-label="Payment">@o.PaymentMethod</td>
+                            <td data-label="Status"><span class="status-badge @badge(o.Status)">@o.Status</span></td>
+                            <td data-label="Action"><a class="btn-quiet btn-sm-c" asp-action="AdminOrderDetail" asp-route-id="@o.Id"><i class="fas fa-eye"></i> View</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

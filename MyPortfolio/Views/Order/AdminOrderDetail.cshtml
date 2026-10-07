@@ -1,0 +1,102 @@
+﻿@model Order
+@{
+    ViewData["Title"] = "Order #" + Model.Id;
+    Layout = "_AdminLayout";
+    var statuses = new[] { "Pending", "Processing", "Shipped", "Delivered", "Cancelled" };
+    var cancelled = Model.Status == "Cancelled";
+    Func<string, string> badge = status => status switch
+    {
+        "Delivered" => "is-ok",
+        "Cancelled" => "is-bad",
+        "Shipped" or "Processing" => "is-info",
+        _ => string.Empty
+    };
+}
+
+<div class="admin-head">
+    <div>
+        <h1 class="admin-title">Order #@Model.Id</h1>
+        <p class="admin-sub">Placed on @Model.OrderDate.ToString("dddd, d MMMM yyyy 'at' HH:mm")</p>
+    </div>
+    <div class="admin-actions">
+        <a class="btn-quiet btn-sm-c" asp-action="AdminOrder"><i class="fas fa-arrow-left"></i> All orders</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="admin-panel">
+            <div class="admin-panel-head"><h2>Items</h2></div>
+            <div class="table-responsive">
+                <table class="data-table is-stacked">
+                    <thead><tr><th>Image</th><th>Watch</th><th>Price</th><th>Qty</th><th>Subtotal</th></tr></thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderItems)
+                        {
+                            <tr>
+                                <td class="cell-image"><div class="thumb"><partial name="_ProductImage" model="item.Product" /></div></td>
+                                <td data-label="Watch">
+                                    <strong>@item.Product.Name</strong>
+                                    <div class="text-muted-c" style="font-size:.8rem">@item.Product.Brand?.Name · Ref. @item.Product.ReferenceNo</div>
+                                </td>
+                                <td data-label="Price">$@item.Price.ToString("N0")</td>
+                                <td data-label="Qty">@item.Quantity</td>
+                                <td data-label="Subtotal"><strong>$@((item.Price * item.Quantity).ToString("N0"))</strong></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="summary-row total mt-3"><span>Order total</span><span class="price">$@Model.TotalAmount.ToString("N0")</span></div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="admin-panel mb-3">
+            <div class="admin-panel-head">
+                <h2>Status</h2>
+                <span class="status-badge @badge(Model.Status)">@Model.Status</span>
+            </div>
+
+            @if (cancelled)
+            {
+                <p class="text-muted-c m-0">This order was cancelled, so its status can't be changed.</p>
+            }
+            else
+            {
+                <form asp-action="UpdateOrderStatus" asp-route-id="@Model.Id" method="post">
+                    <div class="field">
+                        <label for="status">Change status</label>
+                        <select id="status" name="status" class="form-select">
+                            @foreach (var s in statuses)
+                            {
+                                <option value="@s" selected="@(s == Model.Status)">@s</option>
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-brand btn-block"><i class="fas fa-check"></i> Update status</button>
+                </form>
+                <p class="text-muted-c mt-3 mb-0" style="font-size:.82rem">Choosing "Cancelled" puts the watches back in stock.</p>
+            }
+        </div>
+
+        <div class="admin-panel mb-3">
+            <div class="admin-panel-head"><h2>Customer</h2></div>
+            <div class="mb-2"><strong>@Model.FullName</strong></div>
+            <div class="mb-1"><i class="fas fa-envelope text-muted-c me-1"></i> <a href="mailto:@Model.Email" style="word-break:break-all">@Model.Email</a></div>
+            <div><i class="fas fa-phone text-muted-c me-1"></i> @Model.PhoneNumber</div>
+        </div>
+
+        <div class="admin-panel mb-3">
+            <div class="admin-panel-head"><h2>Shipping address</h2></div>
+            <div style="white-space:pre-line">@Model.Address</div>
+            <div>@Model.City @Model.PostalCode</div>
+        </div>
+
+        <div class="admin-panel">
+            <div class="admin-panel-head"><h2>Payment</h2></div>
+            <div class="summary-row"><span class="text-muted-c">Method</span><strong>@Model.PaymentMethod</strong></div>
+            <div class="summary-row mb-0"><span class="text-muted-c">Paid</span><span class="status-badge @(Model.IsPaid ? "is-ok" : "")">@(Model.IsPaid ? "Yes" : "No")</span></div>
+        </div>
+    </div>
+</div>

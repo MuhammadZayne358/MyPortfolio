@@ -1,0 +1,86 @@
+@model CheckoutVM
+@{
+    ViewData["Title"] = "Checkout";
+    decimal total = 0;
+}
+
+<section class="section section-tight">
+    <div class="container">
+        <h1 class="mb-4">Checkout</h1>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <form asp-action="Checkout" method="post" novalidate>
+                    <div class="panel">
+                        <h2 class="panel-title">Shipping information</h2>
+                        <div asp-validation-summary="All" class="alert-c is-error" role="alert"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6 field mb-0">
+                                <label asp-for="FullName">Full name</label>
+                                <input asp-for="FullName" class="form-control" autocomplete="name" required />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 field mb-0">
+                                <label asp-for="PhoneNumber">Phone number</label>
+                                <input asp-for="PhoneNumber" type="tel" class="form-control" autocomplete="tel" required />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 field mb-0">
+                                <label asp-for="Email">Email</label>
+                                <input asp-for="Email" type="email" class="form-control" autocomplete="email" required />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 field mb-0">
+                                <label asp-for="City">City</label>
+                                <input asp-for="City" class="form-control" autocomplete="address-level2" required />
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
+                            <div class="col-12 field mb-0">
+                                <label asp-for="Address">Address</label>
+                                <textarea asp-for="Address" rows="3" class="form-control" autocomplete="street-address" required></textarea>
+                                <span asp-validation-for="Address" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 field mb-0">
+                                <label asp-for="PostalCode">Postal code</label>
+                                <input asp-for="PostalCode" class="form-control" autocomplete="postal-code" />
+                                <span asp-validation-for="PostalCode" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <h2 class="panel-title mt-4">Payment method</h2>
+                        <label class="pay-option"><input asp-for="PaymentMethod" type="radio" value="Cash On Delivery" /> Cash on delivery</label>
+                        <label class="pay-option"><input asp-for="PaymentMethod" type="radio" value="JazzCash" /> JazzCash</label>
+                        <label class="pay-option"><input asp-for="PaymentMethod" type="radio" value="EasyPaisa" /> EasyPaisa</label>
+                        <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+
+                        <button type="submit" class="btn-brand btn-block py-3 mt-3">Place order</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="summary-card">
+                    <h2 class="h4 mb-3">Order summary</h2>
+                    @foreach (var item in Model.Cart.CartItems)
+                    {
+                        total += item.Product.Price * item.Quantity;
+                        <div class="summary-row">
+                            <div>
+                                <div>@item.Product.Name</div>
+                                <small class="text-muted-c">Qty: @item.Quantity</small>
+                            </div>
+                            <strong>$@((item.Product.Price * item.Quantity).ToString("N0"))</strong>
+                        </div>
+                    }
+                    <div class="summary-row"><span class="text-muted-c">Shipping</span><span class="text-free">Free</span></div>
+                    <div class="summary-row total"><span>Total</span><span class="price">$@total.ToString("N0")</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

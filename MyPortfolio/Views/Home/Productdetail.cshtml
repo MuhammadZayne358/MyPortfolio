@@ -1,0 +1,80 @@
+@model Product
+@{
+    ViewData["Title"] = Model.Name;
+    var inStock = Model.StockQuantity > 0;
+    var signedIn = User.Identity?.IsAuthenticated == true;
+}
+
+<section class="section section-tight">
+    <div class="container">
+        <nav class="crumbs crumbs-dark mb-4" aria-label="Breadcrumb">
+            <a asp-controller="Home" asp-action="Index">Home</a><span>/</span><a asp-controller="Home" asp-action="Product">Collection</a><span>/</span>@Model.Name
+        </nav>
+
+        @if (TempData["CartError"] is string cartError)
+        {
+            <div class="alert-c is-error" role="alert"><i class="fas fa-circle-exclamation mt-1"></i><span>@cartError</span></div>
+        }
+
+        <div class="row g-4 g-lg-5 align-items-start">
+            <div class="col-lg-6">
+                <div class="gallery">
+                    @if (string.IsNullOrWhiteSpace(Model.ImageUrl))
+                    {
+                        <div class="img-fallback" role="img" aria-label="No photo available"><i class="fas fa-clock"></i></div>
+                    }
+                    else
+                    {
+                        <img src="@Model.ImageUrl" alt="@Model.Name" />
+                    }
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="watch-brand">@Model.Brand?.Name<span class="text-muted-c fw-normal"> · @Model.Category?.Name</span></div>
+                <h1 class="detail-title">@Model.Name</h1>
+
+                <div class="detail-meta">
+                    <span><strong>Reference</strong> @Model.ReferenceNo</span>
+                    <span><strong>Case size</strong> @Model.CaseSize mm</span>
+                </div>
+
+                <span class="status-badge @(inStock ? "is-ok" : "is-bad")">
+                    <i class="fas @(inStock ? "fa-circle-check" : "fa-circle-xmark")"></i>
+                    @(inStock ? "In stock" : "Out of stock")
+                </span>
+
+                <h2 class="h5 mt-4 mb-2">Description</h2>
+                <p class="text-muted-c" style="white-space:pre-line">@Model.Description</p>
+
+                <div class="buy-box">
+                    <div class="buy-row">
+                        <div>
+                            <div class="text-muted-c" style="font-size:.85rem">Price</div>
+                            <div class="price price-lg">$@Model.Price.ToString("N0")</div>
+                        </div>
+                        <div class="text-end text-muted-c" style="font-size:.85rem">Free insured shipping</div>
+                    </div>
+
+                    @if (!inStock)
+                    {
+                        <button type="button" class="btn-brand btn-block py-3" disabled><i class="fas fa-ban"></i> Out of stock</button>
+                    }
+                    else if (signedIn)
+                    {
+                        <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                            <input type="hidden" name="productId" value="@Model.Id" />
+                            <button type="submit" class="btn-brand btn-block py-3"><i class="fas fa-cart-shopping"></i> Add to cart</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="btn-brand btn-block py-3" asp-controller="Identity" asp-action="Login" asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)">
+                            <i class="fas fa-right-to-bracket"></i> Log in to add to cart
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,70 @@
+@model ContactViewModel
+@{
+    ViewData["Title"] = "Contact";
+}
+
+<section class="page-head">
+    <div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb"><a asp-controller="Home" asp-action="Index">Home</a><span>/</span>Contact</nav>
+        <h1>Get in touch</h1>
+        <p>Our advisors are available to assist you with any enquiry.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="row g-4 g-lg-5">
+            <div class="col-lg-7">
+                <h2 class="mb-3">Send us a message</h2>
+
+                @if (TempData["ContactSuccess"] is string success)
+                {
+                    <div class="alert-c is-success" role="status"><i class="fas fa-circle-check mt-1"></i><span>@success</span></div>
+                }
+
+                <div class="panel">
+                    <form asp-action="Contact" method="post" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <div class="row g-3">
+                            <div class="col-sm-6 field mb-0">
+                                <label asp-for="Name">Your name</label>
+                                <input asp-for="Name" class="form-control" placeholder="James Morley" autocomplete="name" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <div class="col-sm-6 field mb-0">
+                                <label asp-for="Email">Email address</label>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="james@example.com" autocomplete="email" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-12 field mb-0">
+                                <label asp-for="Subject">Subject</label>
+                                <input asp-for="Subject" class="form-control" placeholder="Enquiry about a reference" />
+                                <span asp-validation-for="Subject" class="text-danger"></span>
+                            </div>
+                            <div class="col-12 field mb-0">
+                                <label asp-for="Message">Message</label>
+                                <textarea asp-for="Message" rows="6" class="form-control" placeholder="Tell us how we can help…"></textarea>
+                                <span asp-validation-for="Message" class="text-danger"></span>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn-brand btn-block py-3"><i class="fas fa-paper-plane"></i> Send message</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <h2 class="mb-3">Visit us in person</h2>
+                <div class="contact-card"><span class="collection-icon"><i class="fas fa-location-dot"></i></span><div><strong>Geneva flagship</strong><span>12 Rue du Rhône, 1204 Geneva, Switzerland</span></div></div>
+                <div class="contact-card"><span class="collection-icon"><i class="fas fa-location-dot"></i></span><div><strong>London boutique</strong><span>24 Old Bond Street, Mayfair, London W1S 4AP</span></div></div>
+                <div class="contact-card"><span class="collection-icon"><i class="fas fa-phone"></i></span><div><strong>Concierge line</strong><span>+41 22 000 0000<br />Mon–Sat, 9:00–19:00 CET</span></div></div>
+                <div class="contact-card"><span class="collection-icon"><i class="fas fa-envelope"></i></span><div><strong>Email</strong><a href="mailto:concierge@chronos.com">concierge@chronos.com</a></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

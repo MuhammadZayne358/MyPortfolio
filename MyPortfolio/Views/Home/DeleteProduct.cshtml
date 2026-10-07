@@ -1,0 +1,33 @@
+@model ViewmodelProduct
+@{
+    ViewData["Title"] = "Delete product";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-head">
+    <div>
+        <h1 class="admin-title">Delete product</h1>
+        <p class="admin-sub">This action cannot be undone</p>
+    </div>
+</div>
+
+<div class="confirm-card">
+    <div class="confirm-icon"><i class="fas fa-triangle-exclamation"></i></div>
+    <h2 class="h4">Delete "@Model.Product.Name"?</h2>
+    <p class="text-muted-c m-0">This permanently removes the product from the store.</p>
+
+    <div class="confirm-product">
+        <div class="thumb"><partial name="_ProductImage" model="Model.Product" /></div>
+        <div>
+            <strong>@Model.Product.Name</strong>
+            <div class="text-muted-c" style="font-size:.85rem">Ref. @Model.Product.ReferenceNo · $@Model.Product.Price.ToString("N0")</div>
+        </div>
+    </div>
+
+    <form asp-action="DeleteProduct" asp-route-id="@Model.Product.Id" method="post">
+        <div class="d-flex gap-2">
+            <a class="btn-quiet flex-fill" asp-action="Adminproduct">Cancel</a>
+            <button type="submit" class="btn-danger-c flex-fill"><i class="fas fa-trash-can"></i> Yes, delete</button>
+        </div>
+    </form>
+</div>

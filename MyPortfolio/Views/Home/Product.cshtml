@@ -1,0 +1,102 @@
+@model ProductListViewModel
+@{
+    ViewData["Title"] = "Collection";
+    var products = Model.Products ?? new List<Product>();
+    var maxPrice = products.Any() ? (int)(Math.Ceiling((double)products.Max(p => p.Price) / 100d) * 100) : 0; var index = 0;
+}
+
+<section class="page-head">
+    <div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb"><a asp-controller="Home" asp-action="Index">Home</a><span>/</span>Collection</nav>
+        <h1>Our collection</h1>
+        <p>Authenticated references, curated for the discerning collector.</p>
+    </div>
+</section>
+
+<section class="section section-tight">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-3">
+                <button class="btn-quiet btn-block filters-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#filtersBody" aria-expanded="false" aria-controls="filtersBody">
+                    <i class="fas fa-sliders"></i> Search &amp; filters
+                </button>
+                <div class="collapse filters-body" id="filtersBody">
+                    <div class="filter-card">
+                        <div class="field">
+                            <label class="filter-heading" for="productSearch">Search</label>
+                            <input type="search" id="productSearch" class="form-control" placeholder="Name, brand or reference" />
+                        </div>
+
+                        <div class="filter-heading">Categories</div>
+                        <ul class="filter-list">
+                            @foreach (var cat in Model.Categories)
+                            {
+                                <li>
+                                    <label>
+                                        <input type="checkbox" value="@cat.Id" name="categoryIds" />@cat.Name
+                                        <span class="filter-count">@products.Count(p => p.CategoryId == cat.Id)</span>
+                                    </label>
+                                </li>
+                            }
+                        </ul>
+
+                        <div class="filter-heading">Brands</div>
+                        <ul class="filter-list">
+                            @foreach (var brand in Model.Brands)
+                            {
+                                <li>
+                                    <label>
+                                        <input type="checkbox" value="@brand.Id" name="brandIds" />@brand.Name
+                                        <span class="filter-count">@products.Count(p => p.BrandId == brand.Id)</span>
+                                    </label>
+                                </li>
+                            }
+                        </ul>
+
+                        @if (maxPrice > 0)
+                        {
+                            <div class="filter-heading">Price</div>
+                            <div id="priceLabel" class="text-muted-c mb-2" style="font-size:.88rem">Up to $@maxPrice.ToString("N0")</div>
+                            <input type="range" id="priceRange" min="0" max="@maxPrice" value="@maxPrice" step="100" aria-label="Maximum price" />
+                        }
+
+                        <button type="button" id="clearFilters" class="btn-quiet btn-block mt-3">Clear all</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-9">
+                <div class="products-toolbar">
+                    <div class="products-count" id="resultsCount" aria-live="polite">@products.Count watches</div>
+                    <select id="sortSelect" class="form-select" style="width:auto" aria-label="Sort products">
+                        <option value="newest">Sort: Newest</option>
+                        <option value="low">Price: low to high</option>
+                        <option value="high">Price: high to low</option>
+                        <option value="name">Name: A to Z</option>
+                    </select>
+                </div>
+
+                <div class="row g-3" id="productGrid">
+                    @foreach (var product in products)
+                    {
+                        <div class="col-sm-6 col-xl-4 product-col"
+                             data-search="@($"{product.Name} {product.Brand?.Name} {product.ReferenceNo}".ToLowerInvariant())"
+                             data-name="@product.Name"
+                             data-cat="@product.CategoryId"
+                             data-brand="@product.BrandId"
+                             data-price="@((int)Math.Ceiling(product.Price))"
+                             data-order="@(index++)">
+                            <partial name="_WatchCard" model="product" />
+                        </div>
+                    }
+                </div>
+
+                <div class="empty-state" id="noResults" @(products.Any() ? "hidden" : null)>
+                    <i class="fas fa-magnifying-glass"></i>
+                    <h3>No watches found</h3>
+                    <p>@(products.Any() ? "Try a different search or clear the filters." : "New pieces will be listed here soon.")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,53 @@
+@model IEnumerable<Order>
+@{
+    ViewData["Title"] = "My orders";
+    Func<string, string> badge = status => status switch
+    {
+        "Delivered" or "Completed" => "is-ok",
+        "Cancelled" => "is-bad",
+        "Shipped" or "Processing" => "is-info",
+        _ => string.Empty
+    };
+}
+
+<section class="section section-tight">
+    <div class="container">
+        <h1 class="mb-4">My orders</h1>
+
+        @if (!Model.Any())
+        {
+            <div class="panel empty-state">
+                <i class="fas fa-box-open"></i>
+                <h3>No orders yet</h3>
+                <p>You haven't placed any orders.</p>
+                <a class="btn-brand" asp-controller="Home" asp-action="Product">Start shopping</a>
+            </div>
+        }
+        else
+        {
+            foreach (var order in Model)
+            {
+                <article class="order-card">
+                    <div class="order-head">
+                        <div><small>Order</small><strong>#@order.Id</strong></div>
+                        <div><small>Date</small><strong>@order.OrderDate.ToString("dd MMM yyyy")</strong></div>
+                        <div><small>Status</small><span class="status-badge @badge(order.Status)">@order.Status</span></div>
+                        <div><small>Total</small><strong class="price">$@order.TotalAmount.ToString("N0")</strong></div>
+                    </div>
+                    @foreach (var item in order.OrderItems)
+                    {
+                        <div class="order-line">
+                            <div class="thumb"><partial name="_ProductImage" model="item.Product" /></div>
+                            <div>
+                                <div class="watch-brand">@item.Product.Brand?.Name</div>
+                                <h3>@item.Product.Name</h3>
+                                <div class="l-meta">@item.Product.Category?.Name · Qty @item.Quantity</div>
+                            </div>
+                            <div class="l-price price">$@((item.Price * item.Quantity).ToString("N0"))</div>
+                        </div>
+                    }
+                </article>
+            }
+        }
+    </div>
+</section>

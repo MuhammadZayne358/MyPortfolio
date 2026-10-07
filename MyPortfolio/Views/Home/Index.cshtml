@@ -1,0 +1,137 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Luxury watches";
+    var collectionIcons = new[] { "fa-gem", "fa-water", "fa-stopwatch", "fa-moon" };
+}
+
+<section class="hero">
+    <div class="container">
+        <div class="row align-items-center g-4 g-lg-5">
+            <div class="col-lg-6 order-2 order-lg-1">
+                <h1>Time is the rarest luxury of all</h1>
+                <p class="hero-sub">From storied ateliers in Geneva and La Chaux-de-Fonds, each piece in our collection carries decades of horological mastery.</p>
+                <div class="hero-actions">
+                    <a class="btn-brand" asp-controller="Home" asp-action="Product">Shop the collection</a>
+                    <a class="btn-quiet" asp-controller="Home" asp-action="About">Our story</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat"><strong>@Model.ProductCount</strong><span>Watches in stock</span></div>
+                    <div class="hero-stat"><strong>@Model.BrandCount</strong><span>Maisons</span></div>
+                    <div class="hero-stat"><strong>57</strong><span>Years of heritage</span></div>
+                </div>
+            </div>
+            <div class="col-lg-6 order-1 order-lg-2">
+                <div class="dial-wrap"><partial name="_Dial" /></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@if (Model.BrandNames.Any())
+{
+    <div class="brand-strip" aria-label="Brands we carry">
+        <div class="container">
+            <ul>
+                @foreach (var brand in Model.BrandNames)
+                {
+                    <li>@brand</li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-head">
+            <h2>Featured timepieces</h2>
+            <p>Each reference is individually authenticated and selected by our horologists.</p>
+        </div>
+
+        @if (Model.FeaturedProducts.Any())
+        {
+            <div class="row g-4">
+                @foreach (var product in Model.FeaturedProducts)
+                {
+                    <div class="col-sm-6 col-xl-3">
+                        <partial name="_WatchCard" model="product" />
+                    </div>
+                }
+            </div>
+            <div class="text-center mt-5">
+                <a class="btn-outline-brand" asp-controller="Home" asp-action="Product">View full collection</a>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fas fa-clock"></i>
+                <h3>New arrivals are on the way</h3>
+                <p>Our collection is being updated. Please check back soon.</p>
+            </div>
+        }
+    </div>
+</section>
+
+@if (Model.Collections.Any())
+{
+    <section class="section section-alt">
+        <div class="container">
+            <div class="section-head">
+                <h2>Browse by style</h2>
+                <p>Find the watch that fits the way you live.</p>
+            </div>
+            <div class="row g-3">
+                @for (var i = 0; i < Model.Collections.Count; i++)
+                {
+                    var collection = Model.Collections[i];
+                    <div class="col-sm-6 col-lg-3">
+                        <a class="collection-tile" asp-controller="Home" asp-action="Product">
+                            <span class="collection-icon"><i class="fas @collectionIcons[i % collectionIcons.Length]"></i></span>
+                            <span>
+                                <span class="collection-name">@collection.Name</span>
+                                <span class="collection-count">@collection.ProductCount @(collection.ProductCount == 1 ? "watch" : "watches")</span>
+                            </span>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<section class="section">
+    <div class="container">
+        <div class="section-head">
+            <h2>Why collectors trust CHRONOS</h2>
+            <p>For over five decades we have been the trusted bridge between extraordinary watches and the people who cherish them.</p>
+        </div>
+        <div class="row g-3 g-lg-4">
+            <div class="col-sm-6 col-lg-3"><div class="feature-item"><div class="feature-icon"><i class="fas fa-shield-halved"></i></div><h3>100% authenticity</h3><p>Every timepiece is verified by our master watchmakers before it is listed.</p></div></div>
+            <div class="col-sm-6 col-lg-3"><div class="feature-item"><div class="feature-icon"><i class="fas fa-gem"></i></div><h3>Expert curation</h3><p>Our horologists select only references that meet our standards of quality.</p></div></div>
+            <div class="col-sm-6 col-lg-3"><div class="feature-item"><div class="feature-icon"><i class="fas fa-headset"></i></div><h3>Personal service</h3><p>Dedicated advisors are available to assist you with every acquisition.</p></div></div>
+            <div class="col-sm-6 col-lg-3"><div class="feature-item"><div class="feature-icon"><i class="fas fa-rotate-left"></i></div><h3>30-day returns</h3><p>Not completely happy? Return your watch within 30 days for a full refund.</p></div></div>
+        </div>
+    </div>
+</section>
+
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-head">
+            <h2>What our collectors say</h2>
+        </div>
+        <div class="row g-3 g-lg-4">
+            <div class="col-md-4"><figure class="quote-card m-0"><div class="quote-stars" aria-label="5 out of 5 stars">★★★★★</div><p>CHRONOS found me a reference I had been hunting for nearly three years. Their network and knowledge are truly unparalleled.</p><figcaption class="quote-author"><span class="avatar">JM</span><div><strong>James Morley</strong><span>Collector · London</span></div></figcaption></figure></div>
+            <div class="col-md-4"><figure class="quote-card m-0"><div class="quote-stars" aria-label="5 out of 5 stars">★★★★★</div><p>The authenticity documentation and service history provided with my Patek was more thorough than any auction house.</p><figcaption class="quote-author"><span class="avatar">SH</span><div><strong>Sophia Hartmann</strong><span>Investment advisor · Zürich</span></div></figcaption></figure></div>
+            <div class="col-md-4"><figure class="quote-card m-0"><div class="quote-stars" aria-label="5 out of 5 stars">★★★★★</div><p>I have been a CHRONOS client for twelve years. The concierge service turns every purchase into a genuine experience.</p><figcaption class="quote-author"><span class="avatar">RK</span><div><strong>Rajan Kapoor</strong><span>Entrepreneur · Dubai</span></div></figcaption></figure></div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-band">
+    <div class="container">
+        <h2>Looking for a specific reference?</h2>
+        <p>Tell our advisors what you are searching for and we will get back to you by email.</p>
+        <a class="btn-brand btn-light-c" asp-controller="Home" asp-action="Contact">Talk to an advisor</a>
+    </div>
+</section>

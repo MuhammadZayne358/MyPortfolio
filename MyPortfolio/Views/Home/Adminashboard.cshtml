@@ -1,0 +1,124 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_AdminLayout";
+    var months = new[] { "J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D" };
+    var maxRevenue = Model.MonthlyRevenue.Max();
+    var currentMonth = DateTime.Now.Month - 1;
+    var topCount = Model.Categories.Any() ? Model.Categories.Max(c => c.ProductCount) : 0;
+    Func<string, string> badge = status => status switch
+    {
+        "Delivered" or "Completed" => "is-ok",
+        "Cancelled" => "is-bad",
+        "Shipped" or "Processing" => "is-info",
+        _ => string.Empty
+    };
+}
+
+<div class="admin-head">
+    <div>
+        <h1 class="admin-title">Dashboard</h1>
+        <p class="admin-sub">@DateTime.Now.ToString("dddd, d MMMM yyyy")</p>
+    </div>
+    <div class="admin-actions">
+        <a class="btn-brand btn-sm-c" asp-action="AddProduct"><i class="fas fa-plus"></i> Add product</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3"><div class="stat"><span class="stat-icon"><i class="fas fa-coins"></i></span><div><div class="stat-value">$@Model.TotalRevenue.ToString("N0")</div><div class="stat-label">Total revenue</div></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="stat"><span class="stat-icon is-green"><i class="fas fa-cart-shopping"></i></span><div><div class="stat-value">@Model.TotalOrders.ToString("N0")</div><div class="stat-label">Orders</div></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="stat"><span class="stat-icon is-ink"><i class="fas fa-users"></i></span><div><div class="stat-value">@Model.TotalCustomers.ToString("N0")</div><div class="stat-label">Customers</div></div></div></div>
+    <div class="col-sm-6 col-xl-3"><div class="stat"><span class="stat-icon is-amber"><i class="fas fa-box-open"></i></span><div><div class="stat-value">@Model.TotalProducts.ToString("N0")</div><div class="stat-label">Products@(Model.LowStockCount > 0 ? $" · {Model.LowStockCount} low on stock" : "")</div></div></div></div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-lg-8">
+        <div class="admin-panel">
+            <div class="admin-panel-head"><h2>Monthly revenue</h2><span class="status-badge is-info">@Model.Year</span></div>
+            <div class="bars" role="img" aria-label="Revenue per month for @Model.Year">
+                @for (var i = 0; i < 12; i++)
+                {
+                    var pct = maxRevenue > 0 ? (int)Math.Round(Model.MonthlyRevenue[i] / maxRevenue * 100) : 0;
+                    <div class="bar @(i == currentMonth ? "is-current" : "")" style="height:@(pct)%" title="@Model.MonthlyRevenue[i].ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("en-US"))"></div>
+                }
+            </div>
+            <div class="bar-labels">
+                @foreach (var m in months) { <span>@m</span> }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="admin-panel">
+            <div class="admin-panel-head"><h2>Top categories</h2></div>
+            @if (!Model.Categories.Any())
+            {
+                <p class="text-muted-c m-0">No categories yet.</p>
+            }
+            @foreach (var c in Model.Categories)
+            {
+                <div class="meter-row">
+                    <div><span>@c.Name</span><strong>@c.ProductCount</strong></div>
+                    <div class="meter"><span style="width:@(topCount > 0 ? c.ProductCount * 100 / topCount : 0)%"></span></div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="admin-panel">
+            <div class="admin-panel-head"><h2>Recent orders</h2></div>
+            @if (!Model.RecentOrders.Any())
+            {
+                <p class="text-muted-c m-0">No orders have been placed yet.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="data-table is-stacked">
+                        <thead><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+                        <tbody>
+                            @foreach (var o in Model.RecentOrders)
+                            {
+                                <tr>
+                                    <td data-label="Order"><strong>#@o.Id</strong></td>
+                                    <td data-label="Customer">@o.FullName</td>
+                                    <td data-label="Amount"><strong>$@o.TotalAmount.ToString("N0")</strong></td>
+                                    <td data-label="Status"><span class="status-badge @badge(o.Status)">@o.Status</span></td>
+                                    <td data-label="Date">@o.OrderDate.ToString("dd MMM yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="admin-panel">
+            <div class="admin-panel-head">
+                <h2>Latest messages</h2>
+                @if (Model.UnreadMessages > 0) { <span class="status-badge is-info">@Model.UnreadMessages unread</span> }
+            </div>
+            @if (!Model.RecentMessages.Any())
+            {
+                <p class="text-muted-c m-0">No messages yet.</p>
+            }
+            else
+            {
+                <div class="msg-list">
+                    @foreach (var m in Model.RecentMessages)
+                    {
+                        <a class="msg-item @(m.IsRead ? "" : "is-unread")" asp-action="AdminContact" asp-route-id="@m.Id">
+                            <div class="msg-top"><span class="msg-name">@m.Name</span><span class="msg-time">@m.CreatedAt.ToString("dd MMM")</span></div>
+                            <div class="msg-subject">@m.Subject</div>
+                        </a>
+                    }
+                </div>
+                <a class="btn-quiet btn-block btn-sm-c mt-3" asp-action="AdminContact">View all messages</a>
+            }
+        </div>
+    </div>
+</div>

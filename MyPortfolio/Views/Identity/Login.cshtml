@@ -1,0 +1,51 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="auth-wrap">
+    <div class="container">
+        <div class="auth-card">
+            <h1>Welcome back</h1>
+            <p class="auth-sub">Log in to your CHRONOS account</p>
+
+            @if (TempData["AuthMessage"] is string info)
+            {
+                <div class="alert-c is-success" role="status"><i class="fas fa-circle-check mt-1"></i><span>@info</span></div>
+            }
+
+            <form asp-action="Login" method="post" novalidate>
+                <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+                <div asp-validation-summary="ModelOnly" class="alert-c is-error" role="alert"></div>
+
+                <div class="field">
+                    <label asp-for="Email">Email address</label>
+                    <input asp-for="Email" type="email" class="form-control" placeholder="james@example.com" autocomplete="email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="field">
+                    <label asp-for="Password">Password</label>
+                    <div class="input-icon">
+                        <input asp-for="Password" class="form-control" placeholder="Your password" autocomplete="current-password" />
+                        <button type="button" class="toggle-btn" data-toggle-password aria-label="Show password"><i class="fas fa-eye"></i></button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="auth-row">
+                    <label class="d-flex align-items-center gap-2 m-0"><input asp-for="RememberMe" class="form-check-input m-0" /> Remember me</label>
+                    <a asp-action="ForgetPassword">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn-brand btn-block py-3">Log in</button>
+            </form>
+
+            <div class="auth-foot">New to CHRONOS? <a asp-action="Signup">Create an account</a></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

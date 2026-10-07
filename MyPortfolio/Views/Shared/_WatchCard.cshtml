@@ -1,0 +1,22 @@
+@model Product
+@{
+    var soldOut = Model.StockQuantity <= 0;
+}
+<article class="watch-card">
+    @if (soldOut)
+    {
+        <span class="watch-card-tag">Sold out</span>
+    }
+    <div class="watch-card-img">
+        <partial name="_ProductImage" model="Model" />
+    </div>
+    <div class="watch-card-body">
+        <div class="watch-brand">@Model.Brand?.Name</div>
+        <h3 class="watch-name"><a asp-controller="Home" asp-action="Productdetail" asp-route-id="@Model.Id" class="stretched-link">@Model.Name</a></h3>
+        <div class="watch-ref">Ref. @Model.ReferenceNo</div>
+        <div class="watch-foot">
+            <span class="price">$@Model.Price.ToString("N0")</span>
+            <span class="icon-btn" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+        </div>
+    </div>
+</article>

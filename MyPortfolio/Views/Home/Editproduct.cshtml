@@ -1,0 +1,21 @@
+@model ViewmodelProduct
+@{
+    ViewData["Title"] = "Edit product";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-head">
+    <div>
+        <h1 class="admin-title">Edit product</h1>
+        <p class="admin-sub">Update details for @Model.Product.Name</p>
+    </div>
+</div>
+
+<form asp-action="Editproduct" asp-route-id="@Model.Product.Id" method="post" enctype="multipart/form-data" novalidate>
+    <input type="hidden" asp-for="Product.Id" />
+    <partial name="_ProductForm" model="Model" />
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

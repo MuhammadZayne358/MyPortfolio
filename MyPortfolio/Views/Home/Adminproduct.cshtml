@@ -1,0 +1,72 @@
+@model ProductListViewModel
+@{
+    ViewData["Title"] = "All products";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-head">
+    <div>
+        <h1 class="admin-title">All products</h1>
+        <p class="admin-sub">Manage your complete watch inventory</p>
+    </div>
+    <div class="admin-actions">
+        <a class="btn-brand btn-sm-c" asp-action="AddProduct"><i class="fas fa-plus"></i> Add product</a>
+    </div>
+</div>
+
+<div class="admin-panel">
+    <div class="admin-search">
+        <input type="search" id="adminSearch" class="form-control" placeholder="Search by name, brand or reference" aria-label="Search products" />
+        <select id="adminCategory" class="form-select" aria-label="Filter by category">
+            <option value="">All categories</option>
+            @foreach (var c in Model.Categories) { <option value="@c.Id">@c.Name</option> }
+        </select>
+        <select id="adminBrand" class="form-select" aria-label="Filter by brand">
+            <option value="">All brands</option>
+            @foreach (var b in Model.Brands) { <option value="@b.Id">@b.Name</option> }
+        </select>
+    </div>
+    <div class="text-muted-c mb-3" id="adminCount" style="font-size:.88rem" aria-live="polite">Showing @Model.Products.Count of @Model.Products.Count</div>
+
+    @if (!Model.Products.Any())
+    {
+        <div class="empty-state">
+            <i class="fas fa-box-open"></i>
+            <h3>No products yet</h3>
+            <p>Add your first watch to get started.</p>
+            <a class="btn-brand" asp-action="AddProduct">Add product</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="data-table is-stacked">
+                <thead>
+                    <tr><th>Image</th><th>Name</th><th>Reference</th><th>Brand</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Products)
+                    {
+                        <tr data-admin-row
+                            data-search="@($"{item.Name} {item.Brand?.Name} {item.ReferenceNo}".ToLowerInvariant())"
+                            data-cat="@item.CategoryId" data-brand="@item.BrandId">
+                            <td class="cell-image"><div class="thumb"><partial name="_ProductImage" model="item" /></div></td>
+                            <td data-label="Name"><strong>@item.Name</strong></td>
+                            <td data-label="Reference">@item.ReferenceNo</td>
+                            <td data-label="Brand">@item.Brand?.Name</td>
+                            <td data-label="Category">@item.Category?.Name</td>
+                            <td data-label="Price">$@item.Price.ToString("N0")</td>
+                            <td data-label="Stock"><span class="status-badge @(item.StockQuantity <= 0 ? "is-bad" : item.StockQuantity <= 2 ? "" : "is-ok")">@item.StockQuantity</span></td>
+                            <td data-label="Actions">
+                                <div class="actions">
+                                    <a class="btn-quiet btn-sm-c" asp-action="Editproduct" asp-route-id="@item.Id"><i class="fas fa-pen"></i> Edit</a>
+                                    <a class="btn-danger-c btn-sm-c" asp-action="DeleteProduct" asp-route-id="@item.Id"><i class="fas fa-trash-can"></i> Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -1,0 +1,88 @@
+@model ViewmodelProduct
+@{
+    var isEdit = Model.Product.Id > 0;
+}
+<div asp-validation-summary="ModelOnly" class="alert-c is-error" role="alert"></div>
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="admin-panel">
+            <h2 class="panel-title">Basic information</h2>
+            <div class="field">
+                <label asp-for="Product.Name">Product name *</label>
+                <input asp-for="Product.Name" class="form-control" />
+                <span asp-validation-for="Product.Name" class="text-danger"></span>
+            </div>
+            <div class="row g-3">
+                <div class="col-sm-6 field mb-0">
+                    <label asp-for="Product.BrandId">Brand *</label>
+                    <select asp-for="Product.BrandId" class="form-select">
+                        <option value="">Select brand</option>
+                        @foreach (var b in Model.Brands)
+                        {
+                            <option value="@b.Id" selected="@(b.Id == Model.Product.BrandId)">@b.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Product.BrandId" class="text-danger"></span>
+                </div>
+                <div class="col-sm-6 field mb-0">
+                    <label asp-for="Product.CategoryId">Category *</label>
+                    <select asp-for="Product.CategoryId" class="form-select">
+                        <option value="">Select category</option>
+                        @foreach (var c in Model.Categories)
+                        {
+                            <option value="@c.Id" selected="@(c.Id == Model.Product.CategoryId)">@c.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
+                </div>
+                <div class="col-sm-6 field mb-0">
+                    <label asp-for="Product.ReferenceNo">Reference number *</label>
+                    <input asp-for="Product.ReferenceNo" class="form-control" />
+                    <span asp-validation-for="Product.ReferenceNo" class="text-danger"></span>
+                </div>
+                <div class="col-sm-6 field mb-0">
+                    <label asp-for="Product.CaseSize">Case size (mm)</label>
+                    <input asp-for="Product.CaseSize" type="number" class="form-control" />
+                    <span asp-validation-for="Product.CaseSize" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="field mt-3">
+                <label asp-for="Product.Description">Description</label>
+                <textarea asp-for="Product.Description" rows="6" class="form-control"></textarea>
+                <span asp-validation-for="Product.Description" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="admin-panel mb-3">
+            <h2 class="panel-title">Pricing &amp; stock</h2>
+            <div class="field">
+                <label asp-for="Product.Price">Selling price (USD) *</label>
+                <input asp-for="Product.Price" type="number" step="0.01" min="0" class="form-control" />
+                <span asp-validation-for="Product.Price" class="text-danger"></span>
+            </div>
+            <div class="field mb-0">
+                <label asp-for="Product.StockQuantity">Stock quantity</label>
+                <input asp-for="Product.StockQuantity" type="number" min="0" class="form-control" />
+                <span asp-validation-for="Product.StockQuantity" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="admin-panel mb-3">
+            <h2 class="panel-title">Product image</h2>
+            <div class="upload-zone">
+                <input type="file" name="imagefile" id="imgUpload" accept="image/png,image/jpeg,image/webp,image/gif" aria-label="Upload product image" />
+                <i class="fas fa-cloud-arrow-up"></i>
+                <p class="m-0" id="uploadText">@(isEdit ? "Click to replace the image" : "Click to upload an image")</p>
+                <small>PNG, JPG, WEBP or GIF · max 5 MB</small>
+                <img id="imgPreview" alt="Image preview" src="@Model.Product.ImageUrl" style="@(string.IsNullOrEmpty(Model.Product.ImageUrl) ? "display:none" : "")" />
+            </div>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn-brand py-3"><i class="fas fa-check"></i> @(isEdit ? "Save changes" : "Publish product")</button>
+            <a class="btn-quiet" asp-action="Adminproduct">Cancel</a>
+        </div>
+    </div>
+</div>
