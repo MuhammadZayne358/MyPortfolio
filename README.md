@@ -1,3 +1,4 @@
+
 # MyPortfolio
 
 A full-stack luxury watch e-commerce web application built with **ASP.NET Core MVC (.NET 9)**, Entity Framework Core and SQL Server. It includes a customer-facing storefront and an admin panel for managing products, orders and contact messages.
@@ -100,10 +101,6 @@ Then open the URL shown in the terminal (by default `https://localhost:7263`).
 ## Admin Access
 
 Log in with the admin email and password you set in step 2. The admin panel (dashboard, products, orders, messages) becomes available for that account.
-
-## Screenshots
-
-_Add screenshots here (home page, product page, cart, admin dashboard)._
 
 ## Author
 
