@@ -37,6 +37,7 @@ if (!app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+UseStaticFiles
 app.UseRouting();
 
 app.UseAuthentication();
