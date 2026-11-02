@@ -5,6 +5,20 @@ A full-stack luxury watch e-commerce web application built with **ASP.NET Core M
 
 > Built as a portfolio project to demonstrate end-to-end backend and frontend work.
 
+## Screenshots
+
+| Home | Product details |
+| --- | --- |
+| ![Home](docs/home.png) | ![Product details](docs/product.png) |
+
+| Cart | Checkout |
+| --- | --- |
+| ![Cart](docs/cart.png) | ![Checkout](docs/checkout.png) |
+
+| Admin dashboard | Admin orders |
+| --- | --- |
+| ![Admin dashboard](docs/admin.png) | ![Admin orders](docs/orders.png) |
+
 ## Features
 
 **Storefront**
